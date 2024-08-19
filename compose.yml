@@ -10,9 +10,9 @@ services:
     environment:
       SERVER_HOST: http://192.168.1.118:8001
     networks:
-      - nginx_proxy_manager_overlay
+      - nginx-proxy-manager_default
     restart: unless-stopped
 
 networks:
-  nginx_proxy_manager_overlay:
+  nginx-proxy-manager_default:
     external: true
