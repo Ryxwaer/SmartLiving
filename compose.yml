@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   smart_living:
     container_name: smart_living
@@ -8,8 +6,9 @@ services:
       args:
         - SERVER_HOST=${SERVER_HOST}
     image: smart_living:latest
+    pull_policy: build
     environment:
-      SERVER_HOST: http://supermicro-shutdown:8000
+      SERVER_HOST: http://192.168.1.118:8001
     networks:
       - nginx_proxy_manager_overlay
     restart: unless-stopped
