@@ -1,5 +1,4 @@
 export default defineEventHandler(async (event) => {
-    console.log('Fetching data from server');
     try {
         const response = await fetch(process.env.SERVER_HOST, { method: 'GET', setTimeout: 4000 });
 
