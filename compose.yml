@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   smart_living:
     container_name: smart_living
+    pull_policy: build
     build:
       context: .
       args:
         - SERVER_HOST=${SERVER_HOST}
-    pull_policy: build
     image: smart_living:latest
     environment:
       SERVER_HOST: http://supermicro-shutdown:8000
