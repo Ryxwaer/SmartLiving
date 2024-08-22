@@ -21,7 +21,7 @@ onMounted(() => {
     const refreshToken = useCookie('refreshToken')
 
     if (!refreshToken.value || !devices.value) {
-        router.push('/')
+        router.push('/login')
     }
 
     console.log(`devices: ${devices.value}`)
