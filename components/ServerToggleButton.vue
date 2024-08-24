@@ -35,10 +35,9 @@ const toggleServer = async () => {
   const serverRunning = supermicro.value.status === 200;
   console.log(`Toggling server from: ${serverRunning}`);
   try {
-      // refresh accessToken if needed
-      await fetch('/api/refreshToken', { method: 'POST' });
-
     if (serverRunning === true) {
+      // refresh accessToken if needed
+      $fetch('/api/refreshToken', { method: 'POST' });
       // Shutdown the server and power off smart plug
       $fetch('/api/shutdown', { method: 'POST', body: JSON.stringify({ deviceId: props.device.id }) });
       status.value = 'shutting_down';
@@ -47,6 +46,9 @@ const toggleServer = async () => {
       }, 30000);
 
     } else {
+      status.value = 'starting';
+      // refresh accessToken if needed
+      await $fetch('/api/refreshToken', { method: 'POST' });
       // Power on the smart plug (Replace with actual API call)
       $fetch('/api/toggle-device', {
         method: 'POST',
@@ -67,6 +69,9 @@ const toggleServer = async () => {
 
         if (supermicro.value.status != 200 == serverRunning || attempts >= maxAttempts) {
           clearInterval(interval);
+        }
+        else {
+          status.value = 'starting';
         }
       }, 10000);
     }

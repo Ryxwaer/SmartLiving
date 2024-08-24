@@ -3,7 +3,7 @@
 export default defineEventHandler(async (event) => {
     try {
         // Extract the necessary parameters from the request body
-        const { username, password } = await readBody(event);
+        const { email, password } = await readBody(event);
 
         // Construct the URL based on the region
         let baseurl = "https://px1.tuyaeu.com/homeassistant/";
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
         // Prepare the form data
         const data = new URLSearchParams({
-            userName: username,
+            userName: email,
             password: password,
             countryCode: "EU",
             bizType: "smart_life",
@@ -62,10 +62,14 @@ export default defineEventHandler(async (event) => {
             if (deviceListResponse.ok && deviceData.payload && deviceData.payload.devices) {
                 setCookie(event, 'accessToken', accessToken, {
                     httpOnly: true,
-                    maxAge: expiresIn / 1000 - 33
+                    maxAge: expiresIn / 1000 - 33 // in seconds
                 });
                 setCookie(event, 'refreshToken', refreshToken);
-                setCookie(event, 'devices', JSON.stringify(deviceData.payload.devices));
+                setCookie(event, 'data', JSON.stringify({
+                    email: email,
+                    user: email.substring(0, email.indexOf('@')),
+                    devices: deviceData.payload.devices
+                }));
                 return {
                     status: 200,
                     message: 'Login successful',
@@ -80,8 +84,7 @@ export default defineEventHandler(async (event) => {
         } else {
             return {
                 status: 400,
-                message: 'Authentication failed',
-                error: authData,
+                message: authData.errorMsg || 'Failed to authenticate user',
             };
         }
     } catch (error) {

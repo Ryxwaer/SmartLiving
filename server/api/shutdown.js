@@ -3,7 +3,6 @@ import { toggleDevice } from './toggle-device';
 export default defineEventHandler(async (event) => {
     try {
         const accessToken = getCookie(event, 'accessToken');
-        const refreshToken = getCookie(event, 'refreshToken');
         const { deviceId } = await readBody(event);
 
         // Step 1: Shut down the server

@@ -9,4 +9,5 @@ export default defineNuxtConfig({
   tailwindcss: {
       cssPath: '~/assets/css/input.css'
   },
+  plugins: [ '~/plugins/jquery.client.js' ],
 })
