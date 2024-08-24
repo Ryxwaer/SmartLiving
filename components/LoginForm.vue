@@ -45,7 +45,7 @@ const login = async () => {
     devices.value = data.value.devices
 
     // Redirect to the dashboard
-    useRouter().push('/dashboard')
+    useRouter().push('/')
   } catch (error) {
     alert(error)
   }

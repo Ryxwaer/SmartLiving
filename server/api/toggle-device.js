@@ -12,20 +12,6 @@ export default defineEventHandler(async (event) => {
 
         // Retrieve tokens from cookies
         let accessToken = getCookie(event, 'accessToken');
-        const refreshToken = getCookie(event, 'refreshToken');
-
-        // Check if the access token is missing or expired
-        if (!accessToken) {
-            if (!refreshToken) {
-                return { status: 401, message: 'Unauthorized. Refresh token is missing.' };
-            }
-            try {
-                // Refresh the access token
-                accessToken = await refreshAccessToken(refreshToken);
-            } catch (error) {
-                return { status: 401, message: 'Failed to refresh access token. Please log in again.' };
-            }
-        }
 
         // Attempt to toggle the device
         const result = await toggleDevice(accessToken, deviceId, newStatus);
@@ -37,7 +23,7 @@ export default defineEventHandler(async (event) => {
     }
 });
 
-async function toggleDevice(accessToken, deviceId, newStatus) {
+export async function toggleDevice(accessToken, deviceId, newStatus) {
     const url = `https://px1.tuyaeu.com/homeassistant/skill`;
 
     const data = {
@@ -74,38 +60,5 @@ async function toggleDevice(accessToken, deviceId, newStatus) {
     } catch (error) {
         console.error('Error in toggleDevice:', error.message);
         throw new Error('Failed to toggle the device');
-    }
-}
-
-async function refreshAccessToken(refreshToken) {
-    const refreshUrl = `https://px1.tuyaeu.com/homeassistant/access.do`;
-
-    try {
-        const response = await fetch(refreshUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            params: {
-                grant_type: 'refresh_token',
-                refresh_token: refreshToken,
-            },
-        });
-
-        const refreshData = await response.json();
-
-        if (response.ok && refreshData.access_token) {
-            // Update the access token cookie
-            useCookie('accessToken').value = refreshData.access_token;
-
-            return refreshData.access_token;
-        } else {
-            console.error('Failed to refresh access token:', refreshData);
-            throw new Error('Failed to refresh access token');
-        }
-
-    } catch (error) {
-        console.error('Error in refreshAccessToken:', error.message);
-        throw new Error('Failed to refresh access token');
     }
 }

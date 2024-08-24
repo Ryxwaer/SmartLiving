@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
             if (deviceListResponse.ok && deviceData.payload && deviceData.payload.devices) {
                 setCookie(event, 'accessToken', accessToken, {
                     httpOnly: true,
-                    maxAge: expiresIn - 1000,
+                    maxAge: expiresIn / 1000 - 33
                 });
                 setCookie(event, 'refreshToken', refreshToken);
                 setCookie(event, 'devices', JSON.stringify(deviceData.payload.devices));

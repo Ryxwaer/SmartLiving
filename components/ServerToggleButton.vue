@@ -1,5 +1,6 @@
 <template>
-  <div class="flex justify-center items-center">
+  <div class="text-center text-gray-600"> {{ device.dev_type }} </div>
+  <div class="flex justify-center items-center w-full">
     <div v-if="status !== 'success'" class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
     <div v-else class="flex flex-col items-center">
       <p v-if="supermicro.status === 200" class="text-green-600 font-bold mb-4">Server is running</p>
@@ -11,6 +12,7 @@
       ]">
         {{ supermicro.status === 200 ? 'Shut Down Server' : 'Start Server' }}
       </button>
+      <p class="text-gray-500 text-sm mt-2">{{ supermicro }}</p>
     </div>
   </div>
 </template>
@@ -33,25 +35,20 @@ const toggleServer = async () => {
   const serverRunning = supermicro.value.status === 200;
   console.log(`Toggling server from: ${serverRunning}`);
   try {
+      // refresh accessToken if needed
+      await fetch('/api/refreshToken', { method: 'POST' });
+
     if (serverRunning === true) {
-      // Shutdown the server
-      useFetch('/api/shutdown', { method: 'POST' });
-      // Then power off the smart plug after one minute
-      setTimeout(async () => {
-        useFetch('/api/toggle-device', {
-          method: 'POST',
-          body: JSON.stringify({
-            deviceId: props.device.id,
-            newStatus: 0
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+      // Shutdown the server and power off smart plug
+      $fetch('/api/shutdown', { method: 'POST', body: JSON.stringify({ deviceId: props.device.id }) });
+      status.value = 'shutting_down';
+      setTimeout(() => {
+        refresh();
       }, 30000);
+
     } else {
       // Power on the smart plug (Replace with actual API call)
-      useFetch('/api/toggle-device', {
+      $fetch('/api/toggle-device', {
         method: 'POST',
         body: JSON.stringify({
           deviceId: props.device.id,
@@ -61,22 +58,21 @@ const toggleServer = async () => {
           'Content-Type': 'application/json',
         },
       })
+      // run refresh interval in 10000ms 10 times or until supermicro.value.status = !serverRunning
+      let attempts = 0;
+      const maxAttempts = 10;
+      const interval = setInterval(async () => {
+        await refresh();
+        attempts += 1;
+
+        if (supermicro.value.status != 200 == serverRunning || attempts >= maxAttempts) {
+          clearInterval(interval);
+        }
+      }, 10000);
     }
   } catch (error) {
     alert('Failed to toggle server');
     console.error('Error toggling server:', error);
-  } finally {
-    // run refresh interval in 10000ms 10 times or until supermicro.value.status = !serverRunning
-    let attempts = 0;
-    const maxAttempts = 10;
-    const interval = setInterval(async () => {
-      await refresh();
-      attempts += 1;
-
-      if (supermicro.value.status != 200 == serverRunning || attempts >= maxAttempts) {
-        clearInterval(interval);
-      }
-    }, 10000);
   }
 };
 </script>
