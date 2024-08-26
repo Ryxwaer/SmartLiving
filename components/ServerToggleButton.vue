@@ -1,17 +1,16 @@
 <template>
-  <div class="text-center text-gray-600"> {{ device.dev_type }} </div>
-  <div class="flex justify-center items-center w-full">
+  <div class="text-center text-gray-600"> {{ device.name }} </div>
+  <div class="flex justify-center items-center w-full mt-4">
     <div v-if="status !== 'success'" class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
     <div v-else class="flex flex-col items-center">
-      <p v-if="supermicro.status === 200" class="text-green-600 font-bold mb-4">Server is running</p>
-      <p v-else class="text-red-600 font-bold mb-4">Server is not running</p>
-
       <button @click="toggleServer" :class="[
         supermicro.status === 200 ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700',
         'text-white font-bold py-3 px-6 rounded shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-300'
       ]">
         {{ supermicro.status === 200 ? 'Shut Down Server' : 'Start Server' }}
       </button>
+      <p v-if="supermicro.status === 200" class="text-green-600 font-bold mt-2">Server is running</p>
+      <p v-else class="text-red-600 font-bold mt-2">Server is not running</p>
       <p class="text-gray-500 text-sm mt-2">{{ supermicro }}</p>
     </div>
   </div>
@@ -47,8 +46,6 @@ const toggleServer = async () => {
 
     } else {
       status.value = 'starting';
-      // refresh accessToken if needed
-      await $fetch('/api/refreshToken', { method: 'POST' });
       // Power on the smart plug (Replace with actual API call)
       $fetch('/api/toggle-device', {
         method: 'POST',

@@ -1,4 +1,4 @@
-import { toggleDevice } from './toggle-device';
+import { toggleDevice } from './smartLiving/toggle-device';
 
 export default defineEventHandler(async (event) => {
     try {

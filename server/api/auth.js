@@ -1,5 +1,3 @@
-// /server/api/auth.js
-
 export default defineEventHandler(async (event) => {
     try {
         // Extract the necessary parameters from the request body
@@ -68,12 +66,15 @@ export default defineEventHandler(async (event) => {
                 setCookie(event, 'data', JSON.stringify({
                     email: email,
                     user: email.substring(0, email.indexOf('@')),
-                    devices: deviceData.payload.devices
+                    selected: deviceData.payload.devices
                 }));
+                setCookie(event, 'deviceList', JSON.stringify(deviceData.payload.devices), {
+                    maxAge: 1020,
+                });
                 return {
                     status: 200,
                     message: 'Login successful',
-                    //devices: deviceData.payload.devices,
+                    //selected: deviceData.payload.devices,
                 };
             } else {
                 return {

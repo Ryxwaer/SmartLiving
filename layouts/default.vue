@@ -7,7 +7,7 @@
         <div v-if="refreshToken" class="flex items-center space-x-4">
           <!-- Links to other pages -->
           <nuxt-link v-if="currentRoute !== '/devices'" to="/devices">Select device</nuxt-link>
-          <nuxt-link v-if="currentRoute !== '/'" to="/">Dashboard</nuxt-link>
+          <!-- <nuxt-link v-if="currentRoute !== '/'" to="/">Dashboard</nuxt-link> -->
 
           <!-- Logout button -->
           <button @click="logout" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">

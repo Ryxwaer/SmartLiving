@@ -1,5 +1,8 @@
 export default defineEventHandler(async (event) => {
     try {
+        if (!event) {
+            return { status: 400, message: 'Bad Request' };
+        }
         // Retrieve tokens from cookies
         let accessToken = getCookie(event, 'accessToken');
         const refreshToken = getCookie(event, 'refreshToken');
