@@ -20,6 +20,6 @@ if (!refreshToken.value) {
 }
 
 if (data.value?.selected?.length > 1) {
-  router.push('/devices'); // TODO: select one device that stays on the dashboard
+  router.push('/devices');
 }
 </script>

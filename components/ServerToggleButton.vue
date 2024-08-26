@@ -47,7 +47,7 @@ const toggleServer = async () => {
     } else {
       status.value = 'starting';
       // Power on the smart plug (Replace with actual API call)
-      $fetch('/api/toggle-device', {
+      $fetch('/api/smartLiving/toggle-device', {
         method: 'POST',
         body: JSON.stringify({
           deviceId: props.device.id,
