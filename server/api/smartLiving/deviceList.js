@@ -1,15 +1,9 @@
 //api/smartLiving/deviceList.js
 export default defineEventHandler(async (event) => {
     try {
-        const accessToken = getCookie(event, 'accessToken');
+        const accessToken = event.context.accessToken;
 
         const url = `https://px1.tuyaeu.com/homeassistant/skill`;
-
-        // set cookie from res header
-        const setCookie = (event, name, value, options) => {
-            const cookie = `${name}=${value}`;
-            event.res.setHeader('Set-Cookie', [cookie]);
-        };
 
         const deviceListResponse = await fetch(url, {
             method: 'POST',
@@ -29,6 +23,21 @@ export default defineEventHandler(async (event) => {
         });
 
         const deviceData = await deviceListResponse.json();
+        /*
+        const deviceListResponse = { ok: true };
+        const deviceData = {
+            payload: {
+                devices: [{
+                    data: { online: true, state: true },
+                    name: 'Smart Socket',
+                    icon:
+                        'https://images.tuyaeu.com/smart/icon/001451370140532cRrxW/167713133468403946a5f.jpg',
+                    id: 'bf45be52d9f1af3590x3db',
+                    dev_type: 'switch',
+                    ha_type: 'switch'
+                }]
+            }
+        };*/
 
         if (deviceListResponse.ok && deviceData.payload && deviceData.payload.devices) {
             // cache the device list for 17 minutes

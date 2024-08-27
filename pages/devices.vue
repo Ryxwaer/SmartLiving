@@ -16,6 +16,7 @@
 </template>
 
 <script setup>
+//pages/devices.vue
 const router = useRouter();
 const data = useCookie('data');
 const devices = ref(data.value?.selected);
@@ -38,7 +39,7 @@ if (deviceListCookie.value) {
     console.log('Using devices from cookie:', newDevices.value);
 } else {
     try {
-        const { data: fetchedData } = await useFetch('/api/smartLiving/deviceList', { method: 'POST' });
+        const { data: fetchedData } = await useFetch('/api/smartLiving/deviceList', { method: 'POST', credentials: 'include' });
         console.log(`fetchedData: ${JSON.stringify(fetchedData)}`);
 
         if (fetchedData.value.error) {
@@ -49,6 +50,7 @@ if (deviceListCookie.value) {
         }
     } catch (error) {
         errorMessage.value = `Error: ${error.message || 'Unknown error occurred'}`;
+        console.error('Error fetching devices:', error);
     }
 }
 </script>

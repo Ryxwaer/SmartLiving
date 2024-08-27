@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
                 if (accessToken) {
                     console.log('Token refreshed.');
                     setCookie(event, 'accessToken', accessToken.access_token, {
-                        httpOnly: true,
+                        httpOnly: false,
                         maxAge: accessToken.expires_in / 1000 - 33
                     });
                     return { status: 200, message: 'Token refreshed.' };

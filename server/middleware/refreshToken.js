@@ -1,9 +1,10 @@
+//server/middleware/refreshToken.js
+
 export default defineEventHandler(async (event) => {
-    console.log('refreshToken middleware');
+    const refreshToken = getCookie(event, 'refreshToken');
     // Check if the request path starts with /api/smartLiving
-    if (event.path.startsWith('/api/smartLiving')) {
-        const accessToken = getCookie(event, 'accessToken');
-        const refreshToken = getCookie(event, 'refreshToken');
+    if (refreshToken && event.path.startsWith('/api/smartLiving')) {
+        let accessToken = getCookie(event, 'accessToken');
 
         // Check if accessToken is missing or expired
         if (!accessToken) {
@@ -12,9 +13,12 @@ export default defineEventHandler(async (event) => {
                     const newToken = await refreshAccessToken(refreshToken);
 
                     if (newToken) {
-                        setCookie(event, 'accessToken', newToken.access_token, {
+                        console.log(`Token refreshed. New access token: ${newToken.access_token}`);
+                        accessToken = newToken.access_token
+                        setCookie(event, 'accessToken', accessToken, {
                             httpOnly: false,
                             maxAge: newToken.expires_in / 1000 - 30,
+                            path: '/',
                         });
                     } else {
                         throw new Error('Failed to refresh token');
@@ -34,6 +38,7 @@ export default defineEventHandler(async (event) => {
                 });
             }
         }
+        event.context.accessToken = accessToken;
     }
 
     // Proceed with the request if the token is valid or refreshed
