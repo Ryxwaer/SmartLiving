@@ -45,8 +45,7 @@ if (!user) {
   user.value = 'Login required';
 }
 
-// Watch for route changes to update currentRoute
-watchEffect(() => {
+watch(() => route.fullPath, () => {
   currentRoute.value = route.path;
   user.value = data.value ? data.value?.user : 'Login required';
 });
