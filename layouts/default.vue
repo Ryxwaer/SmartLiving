@@ -49,7 +49,21 @@ const logout = () => {
   router.push('/login');
 }
 
+const updateUserState = () => {
+  data.value = JSON.parse(useCookie('data').value);
+  refreshToken.value = useCookie('refreshToken').value;
+};
+
 onMounted(() => {
+  watch(
+    () => route.path,
+    (newPath, oldPath) => {
+      if (oldPath === '/login' || newPath == '/login') {
+        updateUserState(); // Update state only when navigating to/from login
+      }
+    }
+  );
+
   const loadScript = (src) => {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
