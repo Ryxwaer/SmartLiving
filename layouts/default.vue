@@ -30,7 +30,6 @@
 </template>
 
 <script setup>
-// Set up reactive variables for the route and refreshToken
 const router = useRouter();
 const route = useRoute();
 const data = useCookie('data');
@@ -47,25 +46,9 @@ const logout = () => {
   deviceList.value = null;
   // Redirect to the login page
   router.push('/login');
-}
-
-const updateUserState = () => {
-  data.value = JSON.parse(useCookie('data').value);
-  refreshToken.value = useCookie('refreshToken').value;
 };
 
 onMounted(() => {
-  watch(
-    () => route.path,
-    (newPath, oldPath) => {
-      if (oldPath === '/login' || newPath == '/login') {
-        setTimeout(() => {
-          updateUserState();
-        }, 1000);
-      }
-    }
-  );
-
   const loadScript = (src) => {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
