@@ -2,11 +2,11 @@
   <div class="bg-gray-800 min-h-screen flex flex-col">
     <header class="bg-gray-800 text-white p-4">
       <div class="container mx-auto flex justify-between items-center">
-        <nuxt-link to="/" class="text-xl font-bold">{{ user }}</nuxt-link>
+        <nuxt-link to="/" class="text-xl font-bold">{{ data ? data.user : 'Login required' }}</nuxt-link>
 
         <div v-if="refreshToken" class="flex items-center space-x-4">
           <!-- Links to other pages -->
-          <nuxt-link v-if="currentRoute !== '/devices'" to="/devices">Select device</nuxt-link>
+          <nuxt-link v-if="route.path !== '/devices'" to="/devices"> Select device </nuxt-link>
           <!-- <nuxt-link v-if="currentRoute !== '/'" to="/">Dashboard</nuxt-link> -->
 
           <!-- Logout button -->
@@ -33,28 +33,18 @@
 // Set up reactive variables for the route and refreshToken
 const router = useRouter();
 const route = useRoute();
-const currentRoute = ref(route.path);
-const refreshToken = useCookie('refreshToken');
 const data = useCookie('data');
-const user = ref(data.value?.user);
+const refreshToken = useCookie('refreshToken');
 
 const rippleBackground = ref(null);
 
-// Initialize user data if not already set
-if (!user) {
-  user.value = 'Login required';
-}
-
-watch(() => route.fullPath, () => {
-  currentRoute.value = route.path;
-  user.value = data.value ? data.value?.user : 'Login required';
-});
-
 // Logout function to clear accessToken and redirect to login
 const logout = () => {
+  const deviceList = useCookie('deviceList');
   // Clear user data
-  refreshToken.value = null;
   data.value = null;
+  refreshToken.value = null;
+  deviceList.value = null;
   // Redirect to the login page
   router.push('/login');
 }
@@ -72,13 +62,33 @@ onMounted(() => {
 
   loadScript('/js/jquery.ripples.js')
     .then(() => {
-      const isMobile = window.innerWidth <= 768;
+      const $rippleBackground = $(rippleBackground.value);
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const isMobile = viewportWidth <= 768;
 
-      $(rippleBackground.value).ripples({
+      $rippleBackground.ripples({
         resolution: isMobile ? 128 : 320,
         dropRadius: isMobile ? 40 : 32,
         perturbance: isMobile ? 0.05 : 0.1,
       });
+
+      // Function to generate random positions within the viewport
+      const getRandomPosition = () => {
+        const x = Math.random() * viewportWidth;
+        const y = Math.random() * viewportHeight;
+        return { x, y };
+      };
+
+      // Trigger two drops after initializing the ripple effect
+      const drop1 = getRandomPosition();
+      const drop2 = getRandomPosition();
+
+      // Trigger the drops (x, y, radius, strength)
+      $rippleBackground.ripples('drop', drop1.x, drop1.y, isMobile ? 35 : 50, isMobile ? 0.015 : 0.02);
+      setTimeout(() => {
+        $rippleBackground.ripples('drop', drop2.x, drop2.y, isMobile ? 15 : 50, isMobile ? 0.03 : 0.02);
+      }, 300);
     })
     .catch(error => console.error('Failed to load the ripples script:', error));
 });
