@@ -59,7 +59,9 @@ onMounted(() => {
     () => route.path,
     (newPath, oldPath) => {
       if (oldPath === '/login' || newPath == '/login') {
-        updateUserState(); // Update state only when navigating to/from login
+        setTimeout(() => {
+          updateUserState();
+        }, 1000);
       }
     }
   );
