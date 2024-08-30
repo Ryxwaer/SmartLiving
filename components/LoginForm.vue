@@ -22,6 +22,7 @@
 
 <script setup>
 // /components/LoginForm.vue
+const { fetch } = useUserSession();
 
 const email = ref('');
 const password = ref('');
@@ -39,6 +40,8 @@ const login = async () => {
     if (response.value.status !== 200) {
       throw new Error(response.value.message);
     }
+
+    await fetch();
 
     // Redirect to the dashboard
     useRouter().push('/');

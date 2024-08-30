@@ -16,15 +16,10 @@
 </template>
 
 <script setup>
-//pages/devices.vue
+const { loggedIn } = useUserSession();
 const router = useRouter();
-const data = useCookie('data');
-const devices = ref(data.value?.selected);
 
-// Check if the user is authenticated by looking for the accessToken cookie
-const refreshToken = useCookie('refreshToken');
-
-if (!refreshToken.value || !devices.value) {
+if (!loggedIn) {
     router.push('/login');
 }
 

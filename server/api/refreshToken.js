@@ -3,10 +3,12 @@ export default defineEventHandler(async (event) => {
         if (!event) {
             return { status: 400, message: 'Bad Request' };
         }
-        // Retrieve tokens from cookies
-        let accessToken = getCookie(event, 'accessToken');
-        const refreshToken = getCookie(event, 'refreshToken');
-        
+
+        // Retrieve tokens from session
+        const session = await getUserSession(event);
+        let accessToken = session?.accessToken;
+        const refreshToken = session?.refreshToken;
+
         // Check if the access token is missing or expired
         if (!accessToken) {
             if (!refreshToken) {
@@ -14,16 +16,19 @@ export default defineEventHandler(async (event) => {
             }
             try {
                 // Refresh the access token
-                accessToken = await refreshAccessToken(refreshToken);
-                if (accessToken) {
+                const newToken = await refreshAccessToken(refreshToken);
+                if (newToken) {
                     console.log('Token refreshed.');
-                    setCookie(event, 'accessToken', accessToken.access_token, {
-                        httpOnly: false,
-                        maxAge: accessToken.expires_in / 1000 - 33
-                    });
+                    accessToken = newToken.access_token;
+
+                    // Update session with the new access token and expiration
+                    session.accessToken = newToken.access_token;
+                    session.expiresAt = Date.now() + newToken.expires_in * 1000;
+
+                    await updateUserSession(event, session);
+
                     return { status: 200, message: 'Token refreshed.' };
-                }
-                else {
+                } else {
                     console.error('Failed to refresh access token.');
                     return { status: 401, message: 'Failed to refresh access token. Please log in again.' };
                 }
@@ -31,15 +36,18 @@ export default defineEventHandler(async (event) => {
                 return { status: 401, message: 'Failed to refresh access token. Please log in again.' };
             }
         }
-        return { status: 200, message: 'Token is valid.' };
 
+        return { status: 200, message: 'Token is valid.' };
     } catch (error) {
         console.error('Error refreshing token:', error.message);
         return { status: 500, message: 'Server Error', error: error.message };
     }
 });
 
-export async function attemptToRefreshToken(accessToken, refreshToken) {
+export async function attemptToRefreshToken(session) {
+    let accessToken = session?.accessToken;
+    const refreshToken = session?.refreshToken;
+
     // Check if the access token is missing or expired
     if (!accessToken) {
         if (!refreshToken) {
@@ -47,11 +55,22 @@ export async function attemptToRefreshToken(accessToken, refreshToken) {
         }
         try {
             // Refresh the access token
-            accessToken = await refreshAccessToken(refreshToken);
+            const newToken = await refreshAccessToken(refreshToken);
+            if (newToken) {
+                accessToken = newToken.access_token;
+
+                // Update session with the new access token and expiration
+                session.accessToken = newToken.access_token;
+                session.expiresAt = Date.now() + newToken.expires_in * 1000;
+
+                // You would need to save this session back to the session store
+                await updateUserSession(session);
+            }
         } catch (error) {
             return null;
         }
     }
+
     return accessToken;
 }
 
@@ -73,13 +92,12 @@ async function refreshAccessToken(refreshToken) {
         const refreshData = await response.json();
 
         if (response.ok && refreshData.access_token) {
-            // return refreshed access token
+            // Return refreshed access token
             return refreshData;
         } else {
             console.error('Failed to refresh access token:', refreshData);
             throw new Error('Failed to refresh access token');
         }
-
     } catch (error) {
         console.error('Error in refreshAccessToken:', error.message);
         throw new Error('Failed to refresh access token');

@@ -28,6 +28,7 @@ const { data: supermicro, status, refresh } = useFetch('/api/status', {
   method: 'GET',
   pick: ['status'],
   lazy: true,
+  timeout: 5000,
 });
 
 const toggleServer = async () => {
@@ -42,7 +43,7 @@ const toggleServer = async () => {
       status.value = 'shutting_down';
       setTimeout(() => {
         refresh();
-      }, 30000);
+      }, 25000);
 
     } else {
       status.value = 'starting';

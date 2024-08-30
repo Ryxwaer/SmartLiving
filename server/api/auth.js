@@ -1,3 +1,4 @@
+// /server/api/auth.js
 export default defineEventHandler(async (event) => {
     try {
         // Extract the necessary parameters from the request body
@@ -58,19 +59,21 @@ export default defineEventHandler(async (event) => {
             const deviceData = await deviceListResponse.json();
 
             if (deviceListResponse.ok && deviceData.payload && deviceData.payload.devices) {
-                setCookie(event, 'accessToken', accessToken, {
-                    httpOnly: false,
-                    maxAge: expiresIn / 1000 - 33 // in seconds
-                });
-                setCookie(event, 'refreshToken', refreshToken);
-                setCookie(event, 'data', JSON.stringify({
-                    email: email,
-                    user: email.substring(0, email.indexOf('@')),
-                    selected: deviceData.payload.devices
-                }));
                 setCookie(event, 'deviceList', JSON.stringify(deviceData.payload.devices), {
                     maxAge: 1020,
                 });
+                await setUserSession(event, {
+                    accessToken: accessToken,
+                    expiresAt: Date.now() + authData.expires_in,
+                    refreshToken: authData.refresh_token,
+                    user: {
+                        email: email,
+                        userName: email.substring(0, email.indexOf('@')),
+                    },
+                    loggedInAt: new Date().toISOString(),
+                    selectedDevice: deviceData.payload.devices,
+                });
+                
                 return {
                     status: 200,
                     message: 'Login successful',

@@ -2,18 +2,20 @@
   <div class="bg-gray-800 min-h-screen flex flex-col">
     <header class="bg-gray-800 text-white p-4">
       <div class="container mx-auto flex justify-between items-center">
-        <nuxt-link to="/" class="text-xl font-bold">{{ data ? data.user : 'Login required' }}</nuxt-link>
+        <AuthState v-slot="{ loggedIn, user }">
+          <nuxt-link to="/" class="text-xl font-bold">{{ loggedIn ? user.userName : 'Login required' }}</nuxt-link>
 
-        <div v-if="refreshToken" class="flex items-center space-x-4">
-          <!-- Links to other pages -->
-          <nuxt-link v-if="route.path !== '/devices'" to="/devices"> Select device </nuxt-link>
-          <!-- <nuxt-link v-if="currentRoute !== '/'" to="/">Dashboard</nuxt-link> -->
+          <div v-if="loggedIn" class="flex items-center space-x-4">
+            <!-- Links to other pages -->
+            <nuxt-link v-if="route.path !== '/devices'" to="/devices"> Select device </nuxt-link>
+            <!-- <nuxt-link v-if="currentRoute !== '/'" to="/">Dashboard</nuxt-link> -->
 
-          <!-- Logout button -->
-          <button @click="logout" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-            Logout
-          </button>
-        </div>
+            <!-- Logout button -->
+            <button @click="logout" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+              Logout
+            </button>
+          </div>
+        </AuthState>
       </div>
     </header>
 
@@ -30,20 +32,19 @@
 </template>
 
 <script setup>
+// /layouts/default.vue
 const router = useRouter();
 const route = useRoute();
-const data = useCookie('data');
-const refreshToken = useCookie('refreshToken');
+
+const { loggedIn, user, clear } = useUserSession();
 
 const rippleBackground = ref(null);
 
 // Logout function to clear accessToken and redirect to login
 const logout = () => {
   const deviceList = useCookie('deviceList');
-  // Clear user data
-  data.value = null;
-  refreshToken.value = null;
   deviceList.value = null;
+  clear();
   // Redirect to the login page
   router.push('/login');
 };

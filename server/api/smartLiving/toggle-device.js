@@ -11,10 +11,10 @@ export default defineEventHandler(async (event) => {
         }
 
         // Retrieve tokens from cookies
-        let accessToken = getCookie(event, 'accessToken');
+        const session = await getUserSession(event);
 
         // Attempt to toggle the device
-        const result = await toggleDevice(accessToken, deviceId, newStatus);
+        const result = await toggleDevice(session.accessToken, deviceId, newStatus);
         return result;
 
     } catch (error) {

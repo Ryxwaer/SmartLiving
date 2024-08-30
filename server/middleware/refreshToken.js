@@ -1,44 +1,40 @@
-//server/middleware/refreshToken.js
-
 export default defineEventHandler(async (event) => {
-    const refreshToken = getCookie(event, 'refreshToken');
-    // Check if the request path starts with /api/smartLiving
-    if (refreshToken && event.path.startsWith('/api/smartLiving')) {
-        let accessToken = getCookie(event, 'accessToken');
+    if (event.path.startsWith('/api/smartLiving')) {
+        const session = await getUserSession(event);
+        if (!session) {
+            console.error('Unauthorized request');
+            throw createError({
+                statusCode: 401,
+                statusMessage: 'Unauthorized',
+            });
+        }
 
-        // Check if accessToken is missing or expired
-        if (!accessToken) {
-            if (refreshToken) {
-                try {
-                    const newToken = await refreshAccessToken(refreshToken);
+        if (session.expiresAt < Date.now()) {
+            try {
+                const newToken = await refreshAccessToken(session.refreshToken);
 
-                    if (newToken) {
-                        console.log(`Token refreshed. New access token: ${newToken.access_token}`);
-                        accessToken = newToken.access_token
-                        setCookie(event, 'accessToken', accessToken, {
-                            httpOnly: false,
-                            maxAge: newToken.expires_in / 1000 - 30,
-                            path: '/',
-                        });
-                    } else {
-                        throw new Error('Failed to refresh token');
-                    }
-                } catch (error) {
-                    // Handle failure by returning a 401 Unauthorized error
-                    throw createError({
-                        statusCode: 401,
-                        statusMessage: 'Unauthorized',
-                    });
+                if (newToken) {
+                    // Update session with new accessToken and expiresAt
+                    session.accessToken = newToken.access_token;
+                    session.expiresAt = Date.now() + newToken.expires_in * 1000; // expires_in is usually in seconds
+
+                    // Persist the updated session
+                    await updateUserSession(event, session);
+
+                } else {
+                    throw new Error('Failed to refresh token');
                 }
-            } else {
-                // No refresh token available, return a 401 Unauthorized error
+            } catch (error) {
+                console.error('Token refresh failed:', error.message);
                 throw createError({
                     statusCode: 401,
                     statusMessage: 'Unauthorized',
                 });
             }
         }
-        event.context.accessToken = accessToken;
+        
+        // Store the updated or valid access token in the context
+        event.context.accessToken = session.accessToken;
     }
 
     // Proceed with the request if the token is valid or refreshed

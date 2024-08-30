@@ -34,10 +34,6 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useCookie } from '#app';
-
 const props = defineProps({
   device: {
     type: Object,
@@ -66,10 +62,8 @@ const router = useRouter();
 
 const selectDevice = async () => {
   try {
-    // Get cookie data
-    const data = useCookie('data');
-    // Set data.selected to the selected device
-    data.value.selected = [props.device];
+    const { session } = useUserSession();
+    session.value.selectedDevice = [props.device];
 
     // Redirect to dashboard
     router.push('/');
