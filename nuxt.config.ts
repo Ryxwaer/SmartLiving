@@ -1,4 +1,4 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { randomBytes } from 'crypto';
 
 export default defineNuxtConfig({
   devtools: { enabled: true },

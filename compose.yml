@@ -5,12 +5,12 @@ services:
       context: .
       args:
         - SERVER_HOST=${SERVER_HOST}
-        - NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD}
+        - NODE_ENV=${NODE_ENV}
     image: smart_living:latest
     pull_policy: build
     environment:
       SERVER_HOST: http://192.168.1.118:8001
-      NUXT_SESSION_PASSWORD: rmrus0gdt0fqzz2baoulb05xy28gxqww
+      NODE_ENV: production
     networks:
       - nginx-proxy-manager_default
     restart: unless-stopped
