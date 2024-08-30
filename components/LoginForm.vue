@@ -40,7 +40,7 @@ const login = async () => {
       throw new Error(response.value.message);
     }
 
-    await fetch();
+    fetch(); // fetch session data asynchronously after login
 
     // Redirect to the dashboard
     useRouter().push('/');
