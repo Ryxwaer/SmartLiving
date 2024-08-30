@@ -16,10 +16,10 @@ export default defineEventHandler(async (event) => {
                 if (newToken) {
                     // Update session with new accessToken and expiresAt
                     session.accessToken = newToken.access_token;
-                    session.expiresAt = Date.now() + newToken.expires_in * 1000; // expires_in is usually in seconds
+                    session.expiresAt = Date.now() + newToken.expires_in;
 
-                    // Persist the updated session
-                    await updateUserSession(event, session);
+                    // Persist the updated session using setUserSession
+                    await setUserSession(event, session);
 
                 } else {
                     throw new Error('Failed to refresh token');
