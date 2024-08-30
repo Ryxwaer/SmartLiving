@@ -14,4 +14,9 @@ export default defineNuxtConfig({
 
   plugins: ['~/plugins/jquery.client.js'],
   compatibilityDate: '2024-08-27',
+  runtimeConfig: {
+    session: {
+      maxAge: 60 * 60 * 24 * 30, // 1 month in seconds
+    }
+  },
 })

@@ -35,7 +35,7 @@
 const router = useRouter();
 const route = useRoute();
 
-const { loggedIn, user, clear } = useUserSession();
+const { loggedIn, user, session, clear } = useUserSession();
 
 const rippleBackground = ref(null);
 
@@ -49,6 +49,11 @@ const logout = () => {
 };
 
 onMounted(() => {
+  if (loggedIn) {
+    // Extend session expiration by 1 month (in milliseconds)
+    session.expiresAt = Date.now() + 60 * 60 * 24 * 30 * 1000;
+  }
+
   const loadScript = (src) => {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
