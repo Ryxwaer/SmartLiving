@@ -1,4 +1,3 @@
-//api/smartLiving/deviceList.js
 export default defineEventHandler(async (event) => {
     try {
         const accessToken = event.context.accessToken;

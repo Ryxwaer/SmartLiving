@@ -1,4 +1,3 @@
-// /server/api/auth.js
 export default defineEventHandler(async (event) => {
     try {
         // Extract the necessary parameters from the request body
@@ -35,8 +34,6 @@ export default defineEventHandler(async (event) => {
         if (response.ok && authData.access_token) {
             // Store tokens in some server-side session or respond with them
             const accessToken = authData.access_token;
-            const refreshToken = authData.refresh_token;
-            const expiresIn = authData.expires_in;
 
             // Fetch the list of devices using the retrieved access token
             const deviceListResponse = await fetch(`${baseurl}skill`, {
@@ -77,7 +74,6 @@ export default defineEventHandler(async (event) => {
                 return {
                     status: 200,
                     message: 'Login successful',
-                    //selected: deviceData.payload.devices,
                 };
             } else {
                 return {

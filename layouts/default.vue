@@ -32,7 +32,6 @@
 </template>
 
 <script setup>
-// /layouts/default.vue
 const router = useRouter();
 const route = useRoute();
 

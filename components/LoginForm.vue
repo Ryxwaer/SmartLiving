@@ -21,7 +21,6 @@
 </template>
 
 <script setup>
-// /components/LoginForm.vue
 const { fetch } = useUserSession();
 
 const email = ref('');
