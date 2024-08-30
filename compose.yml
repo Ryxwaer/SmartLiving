@@ -6,11 +6,13 @@ services:
       args:
         - SERVER_HOST=${SERVER_HOST}
         - NODE_ENV=${NODE_ENV}
+        - NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD}
     image: smart_living:latest
     pull_policy: build
     environment:
       SERVER_HOST: http://192.168.1.118:8001
       NODE_ENV: production
+      NUXT_SESSION_PASSWORD: ${NUXT_SESSION_PASSWORD}
     networks:
       - nginx-proxy-manager_default
     restart: unless-stopped
