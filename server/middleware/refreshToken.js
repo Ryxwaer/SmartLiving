@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
                     session.accessToken = newToken.access_token;
                     session.expiresAt = Date.now() + newToken.expires_in;
 
-                    // Persist the updated session using setUserSession
+                    // Persist the updated session
                     await replaceUserSession(event, session);
 
                 } else {

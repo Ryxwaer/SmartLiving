@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
                 setCookie(event, 'deviceList', JSON.stringify(deviceData.payload.devices), {
                     maxAge: 1020,
                 });
-                await setUserSession(event, {
+                await replaceUserSession(event, {
                     accessToken: accessToken,
                     expiresAt: Date.now() + authData.expires_in,
                     refreshToken: authData.refresh_token,

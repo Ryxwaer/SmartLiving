@@ -64,6 +64,9 @@ const selectDevice = async () => {
   try {
     await useFetch('/api/selectDevice', { method: 'POST', body: { device: props.device } });
 
+    const { fetch } = useUserSession();
+    await fetch;
+    
     // Redirect to dashboard
     router.push('/');
 
