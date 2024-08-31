@@ -7,6 +7,7 @@ services:
         - SERVER_HOST=${SERVER_HOST}
         - NODE_ENV=${NODE_ENV}
         - NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD}
+        - TEST=${TEST}
     image: smart_living:latest
     pull_policy: build
     environment:
