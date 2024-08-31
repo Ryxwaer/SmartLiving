@@ -42,7 +42,7 @@ const toggleServer = async () => {
       status.value = 'shutting_down';
       setTimeout(() => {
         refresh();
-      }, 28000);
+      }, 26000);
 
     } else {
       status.value = 'starting';
