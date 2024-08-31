@@ -2,17 +2,12 @@ ARG NODE_VERSION=18.17.1
 
 FROM node:${NODE_VERSION}-slim as base
 
-# These ARGs are for the build stage and can be used to pass values during the build.
-ARG SERVER_HOST
-ARG NODE_ENV
 ARG NUXT_SESSION_PASSWORD
-ARG TEST
+ARG SERVER_HOST
 
-# Set ENV variables that will persist in the running container.
 ENV SERVER_HOST=${SERVER_HOST}
-ENV NODE_ENV=${NODE_ENV}
+ENV NODE_ENV=production
 ENV NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD}
-ENV TEST=${TEST}
 
 WORKDIR /src
 
@@ -28,18 +23,12 @@ RUN npm run build
 RUN npm prune
 
 # Run
-FROM node:${NODE_VERSION}-slim
+FROM base
 
-# Set the environment variables again in the final stage if needed
-# This ensures that they persist in the final container.
-ENV SERVER_HOST=${SERVER_HOST}
-ENV NODE_ENV=${NODE_ENV}
-ENV NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD}
-ENV PORT=8000
-ENV TEST=${TEST}
-
-WORKDIR /src
+ENV PORT=3000
 
 COPY --from=build /src/.output /src/.output
+# Optional, only needed if you rely on unbundled dependencies
+# COPY --from=build /src/node_modules /src/node_modules
 
 CMD [ "node", ".output/server/index.mjs" ]
