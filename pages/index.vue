@@ -9,8 +9,10 @@
 </template>
 
 <script setup>
-const { loggedIn, session } = useUserSession();
+const { loggedIn, session, fetch } = useUserSession();
 const router = useRouter();
+
+await fetch();
 
 // Check if the user is not logged in, redirect to the login page
 if (!loggedIn.value) {

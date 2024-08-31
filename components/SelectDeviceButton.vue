@@ -62,8 +62,7 @@ const router = useRouter();
 
 const selectDevice = async () => {
   try {
-    const { session } = useUserSession();
-    session.value.selectedDevice = [props.device];
+    await useFetch('/api/selectDevice', { method: 'POST', body: { device: props.device } });
 
     // Redirect to dashboard
     router.push('/');

@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
                     session.accessToken = newToken.access_token;
                     session.expiresAt = Date.now() + newToken.expires_in * 1000;
 
-                    await updateUserSession(event, session);
+                    await replaceUserSession(event, session);
 
                     return { status: 200, message: 'Token refreshed.' };
                 } else {
@@ -63,8 +63,7 @@ export async function attemptToRefreshToken(session) {
                 session.accessToken = newToken.access_token;
                 session.expiresAt = Date.now() + newToken.expires_in * 1000;
 
-                // You would need to save this session back to the session store
-                await updateUserSession(session);
+                await replaceUserSession(event, session);
             }
         } catch (error) {
             return null;

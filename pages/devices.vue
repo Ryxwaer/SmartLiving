@@ -34,8 +34,7 @@ if (deviceListCookie.value) {
     console.log('Using devices from cookie:', newDevices.value);
 } else {
     try {
-        const { data: fetchedData } = await useFetch('/api/smartLiving/deviceList', { method: 'POST', credentials: 'include' });
-        console.log(`fetchedData: ${JSON.stringify(fetchedData)}`);
+        const { data: fetchedData } = await useFetch('/api/smartLiving/deviceList', { method: 'POST' });
 
         if (fetchedData.value.error) {
             errorMessage.value = fetchedData.value.error;

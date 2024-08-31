@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
                     session.expiresAt = Date.now() + newToken.expires_in;
 
                     // Persist the updated session using setUserSession
-                    await setUserSession(event, session);
+                    await replaceUserSession(event, session);
 
                 } else {
                     throw new Error('Failed to refresh token');

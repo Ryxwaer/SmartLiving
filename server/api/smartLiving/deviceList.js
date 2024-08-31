@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
                 }]
             }
         };*/
-
+        
         if (deviceListResponse.ok && deviceData.payload && deviceData.payload.devices) {
             // cache the device list for 17 minutes
             setCookie(event, 'deviceList', JSON.stringify(deviceData.payload.devices), {
